@@ -71,7 +71,6 @@ Navigate to http://localhost:8080 and login with any username and password `pass
 | `ramalama.enabled` | Enable Ramalama model server | `true` |
 | `modelsCachePvc.size` | Size of model cache storage | `10Gi` |
 | `jupyterhub.singleuser.defaultUrl` | Default notebook path | `/lab/tree/welcome.ipynb` |
-| `mlflow.enabled` | Enable MLflow tracking server | `true` |
 | `ray-cluster.enabled` | Enable Ray operator and  server | `false` |
 
 ### Storage Configuration
