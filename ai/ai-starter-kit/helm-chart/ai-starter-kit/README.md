@@ -82,7 +82,7 @@ The chart supports different storage configurations:
 
 ### Using GPUs
 
-In order to use GPUs for AI/ML workloads we need to add the necessary config to the services. Check the dependency charts documentation for the values. For example jupyterhub config would be:
+In order to use GPUs for AI/ML workloads we need to add the necessary config to the services. Check the dependency charts documentation for the values. The following example uses GKE nodeSelector as an example. For instance jupyterhub config could be:
 
   ```yaml
   juypterhub:
@@ -175,11 +175,6 @@ helm uninstall ai-starter-kit
 ```bash
 kubectl delete pvc ai-starter-kit-models-cache-pvc
 kubectl delete pvc ai-starter-kit-jupyterhub-hub-db-dir
-```
-
-### Delete GKE cluster
-```bash
-gcloud container clusters delete ${CLUSTER_NAME} --region=${REGION}
 ```
 
 ### Stop minikube
