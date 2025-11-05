@@ -60,6 +60,46 @@ kubectl port-forward svc/ai-starter-kit-jupyterhub-proxy-public 8080:80
 ```
 Navigate to http://localhost:8080 and login with any username and password `password`
 
+### Makefile Commands
+
+The project includes a Makefile with convenient commands for managing the deployment:
+
+#### Development & Testing
+
+```bash
+make start              # Start minikube with mounted model cache (4 CPU, 15GB RAM)
+make start_gpu          # Start minikube with GPU support using krunkit driver
+make lint               # Run Helm chart linting to validate syntax
+make dep_update         # Update Helm chart dependencies
+```
+
+#### Installation & Management
+
+```bash
+make install HF_TOKEN=<your_token>    # Install/upgrade the chart (required: HF_TOKEN env var)
+make uninstall                         # Uninstall the ai-starter-kit release
+make destroy                           # Delete the entire minikube cluster
+```
+
+#### Validation
+
+```bash
+make validate_jupyterhub  # Verify JupyterHub deployment and run connectivity test
+make validate_ray         # Verify Ray cluster deployment and submit test job
+```
+
+#### Distribution
+
+```bash
+make package_helm                           # Package chart into tarball (output: out/)
+make push_helm OCI_HELM_TARGET=<registry>   # Push packaged chart to OCI registry
+```
+
+#### Required Environment Variables
+
+- `HF_TOKEN`: HuggingFace token (for `make install`)
+- `OCI_HELM_TARGET`: OCI registry path (for `make push_helm`)
+
 ## Configuration
 
 ### Key Configuration Options
