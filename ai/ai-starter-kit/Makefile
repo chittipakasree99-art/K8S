@@ -26,12 +26,12 @@ install: check_hf_token
 	helm upgrade --install ai-starter-kit helm-chart/ai-starter-kit --set huggingface.token="$$HF_TOKEN" --timeout 10m -f helm-chart/ai-starter-kit/values.yaml
 
 start:
-	mkdir -p /tmp/models-cache
-	minikube start --cpus 4 --memory 15000 --mount --mount-string="$$HOME/models-cache:/tmp/models-cache"
+	mkdir -p "${HOME}/models-cache"
+	minikube start --cpus 4 --memory 15000 --mount --mount-string="${HOME}/models-cache:/tmp/models-cache"
 
 start_gpu:
-	mkdir -p $HOME/models-cache
-	minikube start --driver krunkit --cpus 4 --memory 15000 --mount --mount-string="$HOME/models-cache:$HOME/models-cache"
+	mkdir -p "${HOME}/models-cache"
+	minikube start --driver krunkit --cpus 4 --memory 15000 --mount --mount-string="${HOME}/models-cache:/tmp/models-cache"
 
 uninstall:
 	helm uninstall ai-starter-kit
