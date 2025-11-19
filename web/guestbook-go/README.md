@@ -48,8 +48,8 @@ Use the `examples/guestbook-go/redis-master-controller.yaml` file to create a [D
 
     ```console
     $ kubectl get pods
-    NAME                        READY     STATUS    RESTARTS   AGE
-    redis-master-xx4uv          1/1       Running   0          1m
+    NAME                            READY   STATUS    RESTARTS   AGE
+    redis-master-5b97bdb85f-vvk28   1/1     Running   0          35m
     ...
     ```
 
@@ -126,10 +126,10 @@ The Redis master we created earlier is a single pod (REPLICAS = 1), while the Re
 
     ```console
     $ kubectl get pods
-    NAME                          READY     STATUS    RESTARTS   AGE
-    redis-master-xx4uv            1/1       Running   0          18m
-    redis-replica-b6wj4           1/1       Running   0          1m
-    redis-replica-iai40           1/1       Running   0          1m
+    NAME                            READY     STATUS    RESTARTS   AGE
+    redis-master-5b97bdb85f-vvk28   1/1       Running   0          35m
+    redis-replica-b6wj4             1/1       Running   0          1m
+    redis-replica-iai40             1/1       Running   0          1m
     ...
     ```
 
