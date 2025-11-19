@@ -1,6 +1,6 @@
 ## Guestbook Example
 
-This example shows how to build a simple multi-tier web application using Kubernetes and Docker. The application consists of a web front end, Redis master for storage, and replicated set of Redis replicas, all for which we will create Kubernetes replication controllers, pods, and services.
+This example shows how to build a simple multi-tier web application using Kubernetes and Docker. The application consists of a web front end, Redis master for storage, and replicated set of Redis replicas, all for which we will create Kubernetes deployments, pods, and services.
 
 If you are running a cluster in Google Container Engine (GKE), instead see the [Guestbook Example for Google Container Engine](https://cloud.google.com/container-engine/docs/tutorials/guestbook).
 
@@ -24,25 +24,25 @@ This example assumes that you have a working cluster. See the [Getting Started G
 
 ### Step One: Create the Redis master pod<a id="step-one"></a>
 
-Use the `examples/guestbook-go/redis-master-controller.yaml` file to create a [replication controller](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a replication controller is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the self-healing mechanism in Kubernetes (keeps the pods alive).
+Use the `examples/guestbook-go/redis-master-controller.yaml` file to create a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a deployment is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the self-healing mechanism in Kubernetes (keeps the pods alive).
 
-1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master replication controller in your Kubernetes cluster by running the `kubectl create -f` *`filename`* command:
+1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master deployment in your Kubernetes cluster by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/redis-master-controller.yaml
+    $ kubectl apply -f guestbook-go/redis-master-controller.yaml
    
     ```
 
-2. To verify that the redis-master controller is up, list the replication controllers you created in the cluster with the `kubectl get rc` command(if you don't specify a `--namespace`, the `default` namespace will be used. The same below):
+2. To verify that the redis-master controller is up, list the deployments you created in the cluster with the `kubectl get deployments` command(if you don't specify a `--namespace`, the `default` namespace will be used. The same below):
 
     ```console
-    $ kubectl get rc
-    CONTROLLER             CONTAINER(S)            IMAGE(S)                    SELECTOR                         REPLICAS
-    redis-master           redis-master            gurpartap/redis             app=redis,role=master            1
+    $ kubectl get deployments
+        NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+        redis-master    1/1     1            1           26m
     ...
     ```
 
-    Result: The replication controller then creates the single Redis master pod.
+    Result: The deployment then creates the single Redis master pod.
 
 3. To verify that the redis-master pod is running, list the pods you created in cluster with the `kubectl get pods` command:
 
@@ -94,29 +94,29 @@ Services find the pods to load balance based on pod labels. The pod that you cre
 
 ### Step Three: Create the Redis replica pods <a id="step-three"></a>
 
-The Redis master we created earlier is a single pod (REPLICAS = 1), while the Redis read replicas we are creating here are 'replicated' pods. In Kubernetes, a replication controller is responsible for managing the multiple instances of a replicated pod.
+The Redis master we created earlier is a single pod (REPLICAS = 1), while the Redis read replicas we are creating here are 'replicated' pods. In Kubernetes, a deployment is responsible for managing the multiple instances of a replicated pod.
 
-1. Use the file [redis-replica-controller.yaml](redis-replica-controller.yaml) to create the replication controller by running the `kubectl create -f` *`filename`* command:
+1. Use the file [redis-replica-controller.yaml](redis-replica-controller.yaml) to create the deployment by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/redis-replica-controller.yaml
+    $ kubectl apply -f guestbook-go/redis-replica-controller.yaml
     
     ```
 
-2. To verify that the redis-replica controller is running, run the `kubectl get rc` command:
+2. To verify that the redis-replica controller is running, run the `kubectl get deployments` command:
 
     ```console
-    $ kubectl get rc
-    CONTROLLER              CONTAINER(S)            IMAGE(S)                         SELECTOR                    REPLICAS
-    redis-master            redis-master            redis                            app=redis,role=master       1
-    redis-replica           redis-replica           registry.k8s.io/redis-slave:v2   app=redis,role=replica      2
+    $ kubectl get deployments
+    NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+    redis-master    1/1     1            1           28m
+    redis-replica   2/2     2            2           10m
     ...
     ```
 
-    Result: The replication controller creates and configures the Redis replica pods through the redis-master service (name:port pair, in our example that's `redis-master:6379`).
+    Result: The deployment creates and configures the Redis replica pods through the redis-master service (name:port pair, in our example that's `redis-master:6379`).
 
     Example:
-    The Redis replicas get started by the replication controller with the following command:
+    The Redis replicas get started by the deployment with the following command:
 
     ```console
     redis-server --replicaof redis-master 6379
@@ -152,7 +152,7 @@ Just like the master, we want to have a service to proxy connections to the read
     $ kubectl get services
     NAME              CLUSTER_IP       EXTERNAL_IP       PORT(S)       SELECTOR               AGE
     redis-master      10.0.136.3       <none>            6379/TCP      app=redis,role=master  1h
-    redis-replica     10.0.21.92       <none>            6379/TCP      app-redis,role=replica 1h
+    redis-replica     10.0.21.92       <none>            6379/TCP      app=redis,role=replica 1h
     ...
     ```
 
@@ -162,25 +162,25 @@ Tip: It is helpful to set labels on your services themselves--as we've done here
 
 ### Step Five: Create the guestbook pods <a id="step-five"></a>
 
-This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni) based) server that is configured to talk to either the replica or master services depending on whether the request is a read or a write. The pods we are creating expose a simple JSON interface and serves a jQuery-Ajax based UI. Like the Redis replica pods, these pods are also managed by a replication controller.
+This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni) based) server that is configured to talk to either the replica or master services depending on whether the request is a read or a write. The pods we are creating expose a simple JSON interface and serves a jQuery-Ajax based UI. Like the Redis replica pods, these pods are also managed by a deployment.
 
-1. Use the [guestbook-controller.yaml](guestbook-controller.yaml) file to create the guestbook replication controller by running the `kubectl create -f` *`filename`* command:
+1. Use the [guestbook-controller.yaml](guestbook-controller.yaml) file to create the guestbook deployment by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/guestbook-controller.yaml
+    $ kubectl apply -f guestbook-go/guestbook-controller.yaml
     
     ```
 
  Tip: If you want to modify the guestbook code open the `_src` of this example and read the README.md and the Makefile. If you have pushed your custom image be sure to update the `image` accordingly in the guestbook-controller.yaml.
 
-2. To verify that the guestbook replication controller is running, run the `kubectl get rc` command:
+2. To verify that the guestbook deployment is running, run the `kubectl get deployment` command:
 
     ```console
-    $ kubectl get rc
-    CONTROLLER            CONTAINER(S)         IMAGE(S)                               SELECTOR                  REPLICAS
-    guestbook             guestbook            registry.k8s.io/guestbook:v3           app=guestbook             3
-    redis-master          redis-master         redis                                  app=redis,role=master     1
-    redis-replica         redis-replica        registry.k8s.io/redis-replica:v2       app=redis,role=replica    2
+    $ kubectl get deployment
+    NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+    guestbook       3/3     3            3           2m
+    redis-master    1/1     1            1           23m
+    redis-replica   2/2     2            2           6m
     ...
     ```
 
@@ -193,8 +193,8 @@ This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni
     guestbook-gv7i6                1/1       Running   0          2m
     guestbook-x405a                1/1       Running   0          2m
     redis-master-xx4uv             1/1       Running   0          23m
-    redis-replica-b6wj4              1/1       Running   0          6m
-    redis-replica-iai40              1/1       Running   0          6m
+    redis-replica-b6wj4            1/1       Running   0          6m
+    redis-replica-iai40            1/1       Running   0          6m
     ...
     ```
 
@@ -204,10 +204,10 @@ This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni
 
 Just like the others, we create a service to group the guestbook pods but this time, to make the guestbook front end externally visible, we specify `"type": "LoadBalancer"`.
 
-1. Use the [guestbook-service.yaml](guestbook-service.yaml) file to create the guestbook service by running the `kubectl create -f` *`filename`* command:
+1. Use the [guestbook-service.yaml](guestbook-service.yaml) file to create the guestbook service by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/guestbook-service.yaml
+    $ kubectl apply -f guestbook-go/guestbook-service.yaml
     ```
 
 
@@ -218,7 +218,7 @@ Just like the others, we create a service to group the guestbook pods but this t
     NAME              CLUSTER_IP       EXTERNAL_IP       PORT(S)       SELECTOR               AGE
     guestbook         10.0.217.218     146.148.81.8      3000/TCP      app=guestbook          1h
     redis-master      10.0.136.3       <none>            6379/TCP      app=redis,role=master  1h
-    redis-replica     10.0.21.92       <none>            6379/TCP      app-redis,role=replica 1h
+    redis-replica     10.0.21.92       <none>            6379/TCP      app=redis,role=replica 1h
     ...
     ```
 
@@ -248,7 +248,7 @@ You can now play with the guestbook that you just created by opening it in a bro
 
 ### Step Eight: Cleanup <a id="step-eight"></a>
 
-After you're done playing with the guestbook, you can cleanup by deleting the guestbook service and removing the associated resources that were created, including load balancers, forwarding rules, target pools, and Kubernetes replication controllers and services.
+After you're done playing with the guestbook, you can cleanup by deleting the guestbook service and removing the associated resources that were created, including load balancers, forwarding rules, target pools, and Kubernetes deployments and services.
 
 Delete all the resources by running the following `kubectl delete -f` *`filename`* command:
 
@@ -256,7 +256,7 @@ Delete all the resources by running the following `kubectl delete -f` *`filename
 $ kubectl delete -f guestbook-go
 guestbook-controller
 guestbook
-redid-master-controller
+redis-master-controller
 redis-master
 redis-replica-controller
 redis-replica
