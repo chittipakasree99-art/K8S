@@ -1,7 +1,5 @@
 ## Guestbook Example
 
-If you are running a cluster in Google Container Engine (GKE), instead see the [Guestbook Example for Google Container Engine](https://cloud.google.com/container-engine/docs/tutorials/guestbook).
-
 ##### Table of Contents
 
  * [Step Zero: Prerequisites](#step-zero)
@@ -71,10 +69,10 @@ A Kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/s
 
 Services find the pods to load balance based on pod labels. The pod that you created in Step One has the label `app=redis` and `role=master`. The selector field of the service determines which pods will receive the traffic sent to the service.
 
-1. Use the [redis-master-service.yaml](redis-master-service.yaml) file to create the service in your Kubernetes cluster by running the `kubectl create -f` *`filename`* command:
+1. Use the [redis-master-service.yaml](redis-master-service.yaml) file to create the service in your Kubernetes cluster by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/redis-master-service.yaml
+    $ kubectl apply -f redis-master-service.yaml
    
     ```
 
@@ -137,10 +135,10 @@ The Redis master we created earlier is a single pod (REPLICAS = 1), while the Re
 
 Just like the master, we want to have a service to proxy connections to the read replicas. In this case, in addition to discovery, the Redis replica service provides transparent load balancing to clients.
 
-1. Use the [redis-replica-service.yaml](redis-replica-service.yaml) file to create the Redis replica service by running the `kubectl create -f` *`filename`* command:
+1. Use the [redis-replica-service.yaml](redis-replica-service.yaml) file to create the Redis replica service by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f redis-replica-service.yaml
+    $ kubectl apply -f redis-replica-service.yaml
    
     ```
 
