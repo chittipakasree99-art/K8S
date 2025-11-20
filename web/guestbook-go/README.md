@@ -207,7 +207,7 @@ Just like the others, we create a service to group the guestbook pods but this t
 1. Use the [guestbook-service.yaml](guestbook-service.yaml) file to create the guestbook service by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl apply -f guestbook-go/guestbook-service.yaml
+    $ kubectl apply -f guestbook-service.yaml
     ```
 
 
