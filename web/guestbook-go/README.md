@@ -1,7 +1,5 @@
 ## Guestbook Example
 
-This example shows how to build a simple multi-tier web application using Kubernetes and Docker. The application consists of a web front end, Redis master for storage, and replicated set of Redis replicas, all for which we will create Kubernetes deployments, pods, and services.
-
 If you are running a cluster in Google Container Engine (GKE), instead see the [Guestbook Example for Google Container Engine](https://cloud.google.com/container-engine/docs/tutorials/guestbook).
 
 ##### Table of Contents
@@ -24,12 +22,12 @@ This example assumes that you have a working cluster. See the [Getting Started G
 
 ### Step One: Create the Redis master pod<a id="step-one"></a>
 
-Use the `examples/guestbook-go/redis-master-controller.yaml` file to create a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a deployment is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the self-healing mechanism in Kubernetes (keeps the pods alive).
+Use the `redis-master-controller.yaml` file to create a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a deployment is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the [self-healing] mechanism (https://kubernetes.io/docs/concepts/architecture/self-healing/) in Kubernetes (keeps the pods alive).
 
 1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master deployment in your Kubernetes cluster by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl apply -f guestbook-go/redis-master-controller.yaml
+    $ kubectl apply -f redis-master-controller.yaml
    
     ```
 
@@ -142,7 +140,7 @@ Just like the master, we want to have a service to proxy connections to the read
 1. Use the [redis-replica-service.yaml](redis-replica-service.yaml) file to create the Redis replica service by running the `kubectl create -f` *`filename`* command:
 
     ```console
-    $ kubectl create -f guestbook-go/redis-replica-service.yaml
+    $ kubectl create -f redis-replica-service.yaml
    
     ```
 
