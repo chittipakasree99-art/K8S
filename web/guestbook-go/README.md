@@ -167,7 +167,7 @@ This is a simple Go `net/http` ([negroni](https://github.com/codegangsta/negroni
 1. Use the [guestbook-controller.yaml](guestbook-controller.yaml) file to create the guestbook deployment by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl apply -f guestbook-go/guestbook-controller.yaml
+    $ kubectl apply -f guestbook-controller.yaml
     
     ```
 
