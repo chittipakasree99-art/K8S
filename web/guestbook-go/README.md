@@ -99,7 +99,7 @@ The Redis master we created earlier is a single pod (REPLICAS = 1), while the Re
 1. Use the file [redis-replica-controller.yaml](redis-replica-controller.yaml) to create the deployment by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl apply -f guestbook-go/redis-replica-controller.yaml
+    $ kubectl apply -f redis-replica-controller.yaml
     
     ```
 
