@@ -1,4 +1,6 @@
 ## Guestbook Example
+This example shows how to build a simple multi-tier web application using Kubernetes. The application consists of a web front end, Redis master for storage, and replicated set of Redis replicas, all for which we will create Kubernetes deployment, pods, and services.
+
 
 ##### Table of Contents
 
@@ -20,7 +22,7 @@ This example assumes that you have a working cluster. See the [Getting Started G
 
 ### Step One: Create the Redis master pod<a id="step-one"></a>
 
-Use the `redis-master-controller.yaml` file to create a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a deployment is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the [self-healing] mechanism (https://kubernetes.io/docs/concepts/architecture/self-healing/) in Kubernetes (keeps the pods alive).
+Use the `redis-master-controller.yaml` file to create a [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and Redis master [pod](https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/). The pod runs a Redis key-value server in a container. Using a deployment is the preferred way to launch long-running pods, even for 1 replica, so that the pod benefits from the [self-healing mechanism](https://kubernetes.io/docs/concepts/architecture/self-healing/) in Kubernetes (keeps the pods alive).
 
 1. Use the [redis-master-controller.yaml](redis-master-controller.yaml) file to create the Redis master deployment in your Kubernetes cluster by running the `kubectl apply -f` *`filename`* command:
 
@@ -92,14 +94,14 @@ Services find the pods to load balance based on pod labels. The pod that you cre
 
 The Redis master we created earlier is a single pod (REPLICAS = 1), while the Redis read replicas we are creating here are 'replicated' pods. In Kubernetes, a deployment is responsible for managing the multiple instances of a replicated pod.
 
-1. Use the file [redis-replica-controller.yaml](redis-replica-controller.yaml) to create the deployment by running the `kubectl apply -f` *`filename`* command:
+1. Use the file [redis-controller.yaml](redis-controller.yaml) to create the deployment by running the `kubectl apply -f` *`filename`* command:
 
     ```console
-    $ kubectl apply -f redis-replica-controller.yaml
+    $ kubectl apply -f redis-controller.yaml
     
     ```
 
-2. To verify that the redis-replica controller is running, run the `kubectl get deployments` command:
+2. To verify that the redis-controller is running, run the `kubectl get deployments` command:
 
     ```console
     $ kubectl get deployments
@@ -254,7 +256,7 @@ guestbook-controller
 guestbook
 redis-master-controller
 redis-master
-redis-replica-controller
+redis-controller
 redis-replica
 ```
 
